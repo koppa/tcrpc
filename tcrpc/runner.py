@@ -31,8 +31,19 @@ ADS_TYPE_MAPPING = {
 
 def map_ads_type(python_type):
     """Retrieve the corresponding PyADS PLC type for a given Python type."""
+    if hasattr(python_type, '_length_') and hasattr(python_type, '_type_'):
+        return python_type
+        
+    if hasattr(python_type, '__module__') and hasattr(python_type, '__name__') and python_type.__module__ == '_ctypes':
+        return python_type
+        
     if python_type in ADS_TYPE_MAPPING:
         return ADS_TYPE_MAPPING[python_type]
+        
+    if hasattr(python_type, 'inner_type') and hasattr(python_type, 'size'):
+        inner_ads_type = map_ads_type(python_type.inner_type)
+        return inner_ads_type * python_type.size
+        
     raise ValueError(f"Unsupported Python type for PyADS mapping: {python_type}")
 
 def load_module(file_path: Path):

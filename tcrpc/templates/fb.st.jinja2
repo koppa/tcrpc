@@ -1,4 +1,7 @@
-{attribute 'reflection'}
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_{{ func_name }}" Id="" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'}
 FUNCTION_BLOCK FB_{{ func_name }}
 VAR_INPUT
 {% for param_name, param_type in params.items() %}    {{ param_name }} : {{ map_type(param_type) }};
@@ -19,8 +22,9 @@ VAR
     state : INT := 0;
     sCmdLine : STRING(255);
 END_VAR
-
-// Implementation
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Implementation
 rTrigExecute(CLK := bExecute);
 
 CASE state OF
@@ -64,3 +68,7 @@ CASE state OF
             state := 0;
         END_IF
 END_CASE
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

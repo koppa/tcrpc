@@ -28,8 +28,31 @@ TYPE_MAPPING = {
     LWORD: "LWORD",
 }
 
+import ctypes
+CTYPES_TO_ST = {
+    ctypes.c_bool: "BOOL",
+    ctypes.c_byte: "SINT",
+    ctypes.c_ubyte: "BYTE",
+    ctypes.c_short: "INT",
+    ctypes.c_ushort: "UINT",
+    ctypes.c_int: "DINT",
+    ctypes.c_uint: "UDINT",
+    ctypes.c_long: "LINT",
+    ctypes.c_ulong: "ULINT",
+    ctypes.c_float: "REAL",
+    ctypes.c_double: "LREAL",
+    ctypes.c_char: "STRING(255)", 
+}
+
 def map_type(python_type) -> str:
     """Map a Python type to a TwinCAT ST type."""
+    if hasattr(python_type, '_length_') and hasattr(python_type, '_type_'):
+        inner_st_type = map_type(python_type._type_)
+        return f"ARRAY [0..{python_type._length_ - 1}] OF {inner_st_type}"
+        
+    if hasattr(python_type, '__module__') and hasattr(python_type, '__name__') and python_type.__module__ in ('_ctypes', 'ctypes'):
+        if python_type in CTYPES_TO_ST:
+            return CTYPES_TO_ST[python_type]
     if python_type in TYPE_MAPPING:
         return TYPE_MAPPING[python_type]
     # For now, custom types or unsupported types fallback to STRING or raise an error
