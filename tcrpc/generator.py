@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 import jinja2
 from tcrpc.decorator import get_registry
+from tcrpc.types import REAL, SINT, INT, DINT, LINT, USINT, UINT, UDINT, ULINT, BYTE, WORD, DWORD, LWORD
 
 # Mapping from Python types to TwinCAT types
 TYPE_MAPPING = {
@@ -12,6 +13,19 @@ TYPE_MAPPING = {
     float: "LREAL",
     bool: "BOOL",
     str: "STRING(255)",
+    REAL: "REAL",
+    SINT: "SINT",
+    INT: "INT",
+    DINT: "DINT",
+    LINT: "LINT",
+    USINT: "USINT",
+    UINT: "UINT",
+    UDINT: "UDINT",
+    ULINT: "ULINT",
+    BYTE: "BYTE",
+    WORD: "WORD",
+    DWORD: "DWORD",
+    LWORD: "LWORD",
 }
 
 def map_type(python_type) -> str:
