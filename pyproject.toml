@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcrpc"
+version = "0.1.0"
+description = "TwinCAT 3 Python RPC Wrapper"
+readme = "README.md"
+authors = [{ name = "TCRPC Author", email = "author@example.com" }]
+requires-python = ">=3.8"
+dependencies = [
+    "pyads>=3.3.0",
+    "jinja2>=3.0.0",
+]
+
+[project.scripts]
+tcrpc-gen = "tcrpc.generator:main"
+tcrpc-run = "tcrpc.runner:main"

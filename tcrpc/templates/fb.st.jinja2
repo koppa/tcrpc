@@ -1,0 +1,66 @@
+{attribute 'reflection'}
+FUNCTION_BLOCK FB_{{ func_name }}
+VAR_INPUT
+{% for param_name, param_type in params.items() %}    {{ param_name }} : {{ map_type(param_type) }};
+{% endfor %}    bExecute : BOOL;
+END_VAR
+VAR_OUTPUT
+    result : {{ map_type(return_type) }};
+    bDone : BOOL;
+    bBusy : BOOL;
+    bError : BOOL;
+END_VAR
+VAR
+    {attribute 'instance-path'}
+    {attribute 'noinit'}
+    sPath : STRING(255);
+    fbStartProcess : NT_StartProcess;
+    rTrigExecute : R_TRIG;
+    state : INT := 0;
+    sCmdLine : STRING(255);
+END_VAR
+
+// Implementation
+rTrigExecute(CLK := bExecute);
+
+CASE state OF
+    0: // Idle
+        IF rTrigExecute.Q THEN
+            bBusy := TRUE;
+            bDone := FALSE;
+            bError := FALSE;
+            // Construct command line with instance path
+            sCmdLine := CONCAT('{{ script_cmd }} --instance-path ', sPath);
+            state := 10;
+        END_IF
+
+    10: // Start Python Process
+        fbStartProcess(
+            NETID := '',
+            PATHSTR := 'python.exe',
+            DIRNAME := 'C:\',
+            COMNDLINE := sCmdLine,
+            START := TRUE,
+            TMOUT := T#5S
+        );
+        IF fbStartProcess.BUSY = FALSE THEN
+            fbStartProcess(START := FALSE);
+            IF fbStartProcess.ERR THEN
+                bBusy := FALSE;
+                bError := TRUE;
+                state := 0;
+            ELSE
+                state := 20;
+            END_IF
+        END_IF
+
+    20: // Wait for Python to complete
+        // Python will write directly to this FB's result, bDone, and bError via ADS
+        IF bDone THEN
+            bBusy := FALSE;
+            state := 0;
+        ELSIF bError THEN
+            bBusy := FALSE;
+            state := 0;
+        END_IF
+END_CASE
