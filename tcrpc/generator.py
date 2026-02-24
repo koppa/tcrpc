@@ -5,59 +5,7 @@ import sys
 from pathlib import Path
 import jinja2
 from tcrpc.decorator import get_registry
-from tcrpc.types import (
-    REAL,
-    SINT,
-    INT,
-    DINT,
-    LINT,
-    USINT,
-    UINT,
-    UDINT,
-    ULINT,
-    BYTE,
-    WORD,
-    DWORD,
-    LWORD,
-)
-
-# Mapping from Python types to TwinCAT types
-TYPE_MAPPING = {
-    int: "DINT",
-    float: "LREAL",
-    bool: "BOOL",
-    str: "STRING(255)",
-    REAL: "REAL",
-    SINT: "SINT",
-    INT: "INT",
-    DINT: "DINT",
-    LINT: "LINT",
-    USINT: "USINT",
-    UINT: "UINT",
-    UDINT: "UDINT",
-    ULINT: "ULINT",
-    BYTE: "BYTE",
-    WORD: "WORD",
-    DWORD: "DWORD",
-    LWORD: "LWORD",
-}
-
-import ctypes
-
-CTYPES_TO_ST = {
-    ctypes.c_bool: "BOOL",
-    ctypes.c_byte: "SINT",
-    ctypes.c_ubyte: "BYTE",
-    ctypes.c_short: "INT",
-    ctypes.c_ushort: "UINT",
-    ctypes.c_int: "DINT",
-    ctypes.c_uint: "UDINT",
-    ctypes.c_long: "LINT",
-    ctypes.c_ulong: "ULINT",
-    ctypes.c_float: "REAL",
-    ctypes.c_double: "LREAL",
-    ctypes.c_char: "STRING(255)",
-}
+from tcrpc.types import TYPE_MAPPING, CTYPES_TO_ST
 
 
 def map_type(python_type) -> str:
@@ -73,10 +21,11 @@ def map_type(python_type) -> str:
     ):
         if python_type in CTYPES_TO_ST:
             return CTYPES_TO_ST[python_type]
-    if python_type in TYPE_MAPPING:
+    try:
         return TYPE_MAPPING[python_type]
-    # For now, custom types or unsupported types fallback to STRING or raise an error
-    raise ValueError(f"Unsupported Python type for TwinCAT mapping: {python_type}")
+    except KeyError:
+        # For now, custom types or unsupported types fallback to STRING or raise an error
+        raise ValueError(f"Unsupported Python type for TwinCAT mapping: {python_type}")
 
 
 # Setup jinja2 environment

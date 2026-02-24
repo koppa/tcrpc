@@ -6,42 +6,7 @@ from pathlib import Path
 import pyads
 
 from tcrpc.decorator import get_registry
-from tcrpc.types import (
-    REAL,
-    SINT,
-    INT,
-    DINT,
-    LINT,
-    USINT,
-    UINT,
-    UDINT,
-    ULINT,
-    BYTE,
-    WORD,
-    DWORD,
-    LWORD,
-)
-
-# Mapping from Python types to pyads constants
-ADS_TYPE_MAPPING = {
-    int: pyads.PLCTYPE_DINT,
-    float: pyads.PLCTYPE_LREAL,
-    bool: pyads.PLCTYPE_BOOL,
-    str: pyads.PLCTYPE_STRING,
-    REAL: pyads.PLCTYPE_REAL,
-    SINT: pyads.PLCTYPE_SINT,
-    INT: pyads.PLCTYPE_INT,
-    DINT: pyads.PLCTYPE_DINT,
-    LINT: pyads.PLCTYPE_LINT,
-    USINT: pyads.PLCTYPE_USINT,
-    UINT: pyads.PLCTYPE_UINT,
-    UDINT: pyads.PLCTYPE_UDINT,
-    ULINT: pyads.PLCTYPE_ULINT,
-    BYTE: pyads.PLCTYPE_BYTE,
-    WORD: pyads.PLCTYPE_WORD,
-    DWORD: pyads.PLCTYPE_DWORD,
-    LWORD: getattr(pyads, "PLCTYPE_LWORD", pyads.PLCTYPE_ULINT),
-}
+from tcrpc.types import ADS_TYPE_MAPPING
 
 
 def map_ads_type(python_type):
