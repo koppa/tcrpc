@@ -11,16 +11,28 @@ VAR
 {% for param_name, param_type in params.items() %}    _{{ param_name }} : {{ map_type(param_type) }};
 {% endfor %}
 
+    Timeout : TIME := T#10S;
+
     {attribute 'instance-path'}
     {attribute 'noinit'}
     sPath : STRING(255);
     fbStartProcess : NT_StartProcess;
+    _timer : TON;
     state : INT := 0;
     sCmdLine : STRING(255);
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF NOT Busy THEN
+    RETURN;
+END_IF
+
+_timer(IN := Busy, PT := Timeout);
+IF _timer.Q THEN
+    // Reset process starter and abort sequence
+    fbStartProcess(START := FALSE);
+    Abort('RPC execution timed out');
+    state := 0;
     RETURN;
 END_IF
 
