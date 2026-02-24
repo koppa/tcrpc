@@ -2,42 +2,29 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_{{ func_name }}" Id="" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'reflection'}
-FUNCTION_BLOCK FB_{{ func_name }}
-VAR_INPUT
-{% for param_name, param_type in params.items() %}    {{ param_name }} : {{ map_type(param_type) }};
-{% endfor %}    bExecute : BOOL;
-END_VAR
-VAR_OUTPUT
-    result : {{ map_type(return_type) }};
-    bDone : BOOL;
-    bBusy : BOOL;
-    bError : BOOL;
-END_VAR
+FUNCTION_BLOCK FB_{{ func_name }} EXTENDS ZCore.Object
 VAR
+    // INTERNAL STATE (Read/Written by PyADS)
+    _bDone : BOOL;
+    _bError : BOOL;
+    _result : {{ map_type(return_type) }};
+{% for param_name, param_type in params.items() %}    _{{ param_name }} : {{ map_type(param_type) }};
+{% endfor %}
+
     {attribute 'instance-path'}
     {attribute 'noinit'}
     sPath : STRING(255);
     fbStartProcess : NT_StartProcess;
-    rTrigExecute : R_TRIG;
     state : INT := 0;
     sCmdLine : STRING(255);
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Implementation
-rTrigExecute(CLK := bExecute);
+      <ST><![CDATA[IF NOT Busy THEN
+    RETURN;
+END_IF
 
 CASE state OF
-    0: // Idle
-        IF rTrigExecute.Q THEN
-            bBusy := TRUE;
-            bDone := FALSE;
-            bError := FALSE;
-            // Construct command line with instance path
-            sCmdLine := CONCAT('{{ script_cmd }} --instance-path ', sPath);
-            state := 10;
-        END_IF
-
     10: // Start Python Process
         fbStartProcess(
             NETID := '',
@@ -50,8 +37,7 @@ CASE state OF
         IF fbStartProcess.BUSY = FALSE THEN
             fbStartProcess(START := FALSE);
             IF fbStartProcess.ERR THEN
-                bBusy := FALSE;
-                bError := TRUE;
+                Abort('Failed to start python process');
                 state := 0;
             ELSE
                 state := 20;
@@ -59,16 +45,51 @@ CASE state OF
         END_IF
 
     20: // Wait for Python to complete
-        // Python will write directly to this FB's result, bDone, and bError via ADS
-        IF bDone THEN
-            bBusy := FALSE;
+        // Python will write directly to this FB's _result, _bDone, and _bError via ADS
+        IF _bDone THEN
+            SetIdle();
             state := 0;
-        ELSIF bError THEN
-            bBusy := FALSE;
+        ELSIF _bError THEN
+            Abort('Python process returned an error via PyADS');
             state := 0;
         END_IF
 END_CASE
 ]]></ST>
     </Implementation>
+    <Method Name="RunAsync" Id="">
+      <Declaration><![CDATA[METHOD RunAsync
+VAR_INPUT
+{% for param_name, param_type in params.items() %}    {{ param_name }} : {{ map_type(param_type) }};
+{% endfor %}END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Busy THEN
+    RETURN; // Do not start if already executing
+END_IF
+
+// Store inputs internally so python can read them by path
+{% for param_name, param_type in params.items() %}_{{ param_name }} := {{ param_name }};
+{% endfor %}
+
+// Reset flags
+_bDone := FALSE;
+_bError := FALSE;
+
+// Prepare execution
+sCmdLine := CONCAT('{{ script_cmd }} --instance-path ', sPath);
+state := 10;
+SetBusy(TRUE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Result" Id="">
+      <Declaration><![CDATA[PROPERTY Result : {{ map_type(return_type) }}]]></Declaration>
+      <Get Name="Get" Id="">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Result := _result;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
   </POU>
 </TcPlcObject>
