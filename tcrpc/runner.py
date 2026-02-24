@@ -7,7 +7,7 @@ from pathlib import Path
 import pyads
 
 from tcrpc.decorator import get_registry
-from tcrpc.types import ADS_TYPE_MAPPING
+from tcrpc.types import TYPE_MAPPING
 
 
 def map_ads_type(python_type):
@@ -23,7 +23,7 @@ def map_ads_type(python_type):
         return python_type
 
     try:
-        return ADS_TYPE_MAPPING[python_type]
+        return TYPE_MAPPING[python_type][1]
     except KeyError:
         pass
 

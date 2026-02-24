@@ -16,17 +16,8 @@ def map_type(python_type) -> str:
         inner_st_type = map_type(python_type._type_)
         return f"ARRAY [0..{python_type._length_ - 1}] OF {inner_st_type}"
 
-    if (
-        hasattr(python_type, "__module__")
-        and hasattr(python_type, "__name__")
-        and python_type.__module__ in ("_ctypes", "ctypes")
-    ):
-        try:
-            return CTYPES_TO_ST[python_type]
-        except KeyError:
-            pass
     try:
-        return TYPE_MAPPING[python_type]
+        return TYPE_MAPPING[python_type][0]
     except KeyError:
         # For now, custom types or unsupported types fallback to STRING or raise an error
         raise ValueError(f"Unsupported Python type for TwinCAT mapping: {python_type}")
