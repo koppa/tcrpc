@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <POU Name="FB_{{ func_name }}" Id="" SpecialFunc="None">
+  <POU Name="RPC_{{ func_name }}" Id="" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'reflection'}
-FUNCTION_BLOCK FB_{{ func_name }} EXTENDS ZCore.Object
+FUNCTION_BLOCK RPC_{{ func_name }} EXTENDS ZCore.Object
 VAR
     // INTERNAL STATE (Read/Written by PyADS)
     _bDone : BOOL;

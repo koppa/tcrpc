@@ -101,9 +101,8 @@ def generate_fb(func_name: str, params: dict, return_type, script_path: str) -> 
     )
 
 
-def find_pou_in_project(plc_dir: Path, func_name: str) -> Path:
-    """Recursively search for an existing FB file in the PLC project."""
-    filename = f"FB_{func_name}.TcPOU"
+def find_file(plc_dir: Path, filename: str) -> Path:
+    """Recursively search for an existing file in the PLC project."""
     for path in plc_dir.rglob(filename):
         return path
     return None
@@ -181,13 +180,12 @@ def main():
         script_cmd = f"{file_path.resolve()} --run {func_name}"
 
         fb_code = generate_fb(func_name, params, ret_type, script_cmd)
+        filename = f"RPC_{func_name}.TcPOU"
 
         if plc_mode:
-            pou_path = find_pou_in_project(plc_dir, func_name)
+            pou_path = find_file(plc_dir, filename)
             if not pou_path:
-                print(
-                    f"Error: Could not find FB_{func_name}.TcPOU in PLC project {plc_dir}"
-                )
+                print(f"Error: Could not find {filename} in PLC project {plc_dir}")
                 print(
                     f"Make sure you have created the FB manually or generated it once before updating."
                 )
@@ -197,7 +195,7 @@ def main():
             with open(pou_path, "w") as f:
                 f.write(fb_code)
         else:
-            out_file = output_dir / f"FB_{func_name}.TcPOU"
+            out_file = output_dir / filename
             with open(out_file, "w") as f:
                 f.write(fb_code)
             print(f"  Generated: {out_file}")
