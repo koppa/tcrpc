@@ -100,7 +100,7 @@ def main():
     instance_path = args.instance_path
 
     # Determine the NetID to connect to
-    net_id = args.ams_net_id if args.ams_net_id else pyads.PORT_LOCAL
+    net_id = args.ams_net_id if args.ams_net_id else "127.0.0.1.1.1"
 
     try:
         plc = pyads.Connection(net_id, args.ads_port)

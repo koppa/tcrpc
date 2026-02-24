@@ -78,7 +78,7 @@ TYPE_MAPPING = {
     BYTE: ("BYTE", pyads.PLCTYPE_BYTE),
     WORD: ("WORD", pyads.PLCTYPE_WORD),
     DWORD: ("DWORD", pyads.PLCTYPE_DWORD),
-    LWORD: ("LWORD", pyads.PLCTYPE_LWORD),
+    LWORD: ("LWORD", getattr(pyads, "PLCTYPE_LWORD", pyads.PLCTYPE_ULINT)),
     ctypes.c_bool: ("BOOL", pyads.PLCTYPE_BOOL),
     ctypes.c_byte: ("SINT", pyads.PLCTYPE_SINT),
     ctypes.c_ubyte: ("BYTE", pyads.PLCTYPE_BYTE),

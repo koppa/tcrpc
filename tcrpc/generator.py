@@ -7,7 +7,7 @@ from pathlib import Path
 import jinja2
 
 from tcrpc.decorator import get_registry
-from tcrpc.types import CTYPES_TO_ST, TYPE_MAPPING
+from tcrpc.types import TYPE_MAPPING
 
 
 def map_type(python_type) -> str:
