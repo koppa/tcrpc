@@ -4,6 +4,7 @@ Variables can be annotated with these types so the generator knows which exact T
 """
 
 import ctypes
+import pyads
 
 
 class REAL(float):
@@ -101,10 +102,6 @@ TYPE_MAPPING = {
     WORD: "WORD",
     DWORD: "DWORD",
     LWORD: "LWORD",
-}
-
-
-CTYPES_TO_ST = {
     ctypes.c_bool: "BOOL",
     ctypes.c_byte: "SINT",
     ctypes.c_ubyte: "BYTE",

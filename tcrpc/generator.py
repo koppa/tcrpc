@@ -19,8 +19,10 @@ def map_type(python_type) -> str:
         and hasattr(python_type, "__name__")
         and python_type.__module__ in ("_ctypes", "ctypes")
     ):
-        if python_type in CTYPES_TO_ST:
+        try:
             return CTYPES_TO_ST[python_type]
+        except KeyError:
+            pass
     try:
         return TYPE_MAPPING[python_type]
     except KeyError:

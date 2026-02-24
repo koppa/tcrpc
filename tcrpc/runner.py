@@ -21,12 +21,10 @@ def map_ads_type(python_type):
     ):
         return python_type
 
-    if python_type in ADS_TYPE_MAPPING:
+    try:
         return ADS_TYPE_MAPPING[python_type]
-
-    if hasattr(python_type, "inner_type") and hasattr(python_type, "size"):
-        inner_ads_type = map_ads_type(python_type.inner_type)
-        return inner_ads_type * python_type.size
+    except KeyError:
+        pass
 
     raise ValueError(f"Unsupported Python type for PyADS mapping: {python_type}")
 
