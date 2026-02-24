@@ -1,6 +1,8 @@
-import pytest
 import ctypes
+
 import pyads
+import pytest
+
 from tcrpc.generator import map_type
 from tcrpc.types import REAL, UINT
 

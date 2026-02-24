@@ -1,5 +1,5 @@
 import inspect
-from typing import Callable, Dict, Any
+from typing import Any, Callable, Dict
 
 # Registry to hold all decorated functions
 _REGISTRY: Dict[str, Dict[str, Any]] = {}

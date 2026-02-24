@@ -4,6 +4,7 @@ Variables can be annotated with these types so the generator knows which exact T
 """
 
 import ctypes
+
 import pyads
 
 

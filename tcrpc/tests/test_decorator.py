@@ -1,5 +1,6 @@
 import pytest
-from tcrpc.decorator import tc_callable, get_registry
+
+from tcrpc.decorator import get_registry, tc_callable
 
 
 def test_missing_param_type():

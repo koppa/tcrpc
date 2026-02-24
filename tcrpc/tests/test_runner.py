@@ -1,6 +1,8 @@
-import pytest
-import pyads
 import ctypes
+
+import pyads
+import pytest
+
 from tcrpc.runner import map_ads_type
 from tcrpc.types import REAL, UINT
 
