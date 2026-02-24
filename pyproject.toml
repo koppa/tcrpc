@@ -17,3 +17,9 @@ dependencies = [
 [project.scripts]
 tcrpc-gen = "tcrpc.generator:main"
 tcrpc-run = "tcrpc.runner:main"
+
+[tool.setuptools]
+packages = ["tcrpc"]
+
+[tool.setuptools.package-data]
+tcrpc = ["templates/*.jinja2"]
